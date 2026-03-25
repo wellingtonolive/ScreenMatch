@@ -4,7 +4,7 @@ import br.com.alura.screenmatch.models.Filme;
 import br.com.alura.screenmatch.models.Serie;
 import br.com.alura.screenmatch.models.Titulo;
 
-import java.util.ArrayList;
+import java.util.*;
 
 public class PrincipalComListas {
 
@@ -46,6 +46,33 @@ public class PrincipalComListas {
                System.out.println("Classificacao " + filme.getClassificacao());
            }
        }
+
+       List<String> listaDeArtistas = new ArrayList<>();
+       listaDeArtistas.add("Wellington");
+       listaDeArtistas.add("Rafaela");
+       listaDeArtistas.add("Adam");
+
+       System.out.println("Lista de Artistas");
+       System.out.println(listaDeArtistas);
+
+       System.out.println("Depois da Ordenacao");
+       Collections.sort(listaDeArtistas);
+       System.out.println(listaDeArtistas);
+
+
+        System.out.println("Lista de Titulos Pre Ordenacao");
+        System.out.println(lista);
+
+        Collections.sort(lista);
+        System.out.println("Lista de Artista Pos Ordenacao");
+        System.out.println(lista);
+
+        lista.sort(Comparator.comparing(Titulo::getAnoDeLancamento));
+
+        System.out.println("Ordenando Pelo Ano");
+        System.out.println(lista);
+
+
 
 
     }
