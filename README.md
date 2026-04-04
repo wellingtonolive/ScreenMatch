@@ -1,174 +1,270 @@
-# 🎬 ScreenMatch — Media Catalog & Recommendation Engine
+# 🎬 ScreenMatch - Busca de Filmes com OMDb API
 
-> Aplicação Java orientada a objetos para gerenciamento, avaliação e recomendação de conteúdos audiovisuais (filmes e séries), com foco em boas práticas, extensibilidade e organização de domínio.
-
----
-
-## 📌 Visão Geral
-
-O **ScreenMatch** é um sistema de domínio que simula uma plataforma de catálogo de mídia, permitindo:
-
-- Gerenciamento de títulos (filmes e séries)
-- Avaliação e cálculo de média
-- Cálculo de tempo total de consumo
-- Filtro inteligente de recomendações
-- Ordenação e manipulação avançada de coleções
-
-O projeto foi estruturado seguindo princípios sólidos de engenharia de software, com foco em:
-
-- baixo acoplamento
-- alta coesão
-- extensibilidade
-- clareza de domínio
+Projeto Java desenvolvido para buscar informações de filmes através da **OMDb API**, permitindo ao usuário pesquisar títulos via terminal e salvar os resultados em arquivo.
 
 ---
 
-## 🧠 Arquitetura e Design
+## 📌 Sobre o projeto
 
-O projeto segue uma abordagem baseada em **Domain Modeling (DDD simplificado)**:
+O **ScreenMatch** é uma aplicação Java de linha de comando que permite ao usuário:
 
+- Buscar filmes digitando o nome no terminal;
+- Consumir dados da API pública **OMDb API**;
+- Converter o JSON retornado em objetos Java;
+- Armazenar os títulos buscados em uma lista;
+- Gerar um arquivo com os filmes pesquisados.
 
----
+Este projeto é ideal para praticar conceitos como:
 
-## 🏗️ Princípios Aplicados
-
-### ✅ SOLID
-
-- **S — Single Responsibility**  
-  Cada classe tem responsabilidade única (ex: `CalculadoraDeTempo`)
-
-- **O — Open/Closed**  
-  Novos tipos podem ser adicionados sem alterar código existente
-
-- **L — Liskov Substitution**  
-  `Filme` e `Serie` podem ser usados como `Titulo`
-
-- **I — Interface Segregation**  
-  Uso de contratos simples
-
-- **D — Dependency Inversion (conceitual)**  
-  Regras desacopladas da execução
+- Consumo de API REST
+- Manipulação de JSON
+- Programação orientada a objetos
+- Organização em camadas
+- Utilitários e integração externa
+- Entrada de dados com `Scanner`
+- Escrita em arquivos
 
 ---
 
-### ✅ Padrões Utilizados
+## 🛠️ Tecnologias utilizadas
 
-- Herança e Polimorfismo
-- Strategy-like behavior (Filtro)
-- Collections + Sorting Strategies
-- Pattern Matching (`instanceof`)
-
----
-
-## 🚀 Funcionalidades
-
-### 🎥 Gestão de Conteúdo
-- Criação de filmes e séries
-- Controle de duração
-- Inclusão em plano
-
-### ⭐ Sistema de Avaliação
-- Registro de avaliações
-- Cálculo automático de média
-- Classificação baseada em regra
-
-### ⏱️ Cálculo de Tempo Total
-- Soma do tempo consumido
-- Suporte a diferentes tipos
-
-### 🧠 Recomendação
-- Filtro baseado em classificação
-
-### 📊 Manipulação de Dados
-- Ordenação por nome e ano
-- Uso de `Comparable` e `Comparator`
+- **Java**
+- **POO (Programação Orientada a Objetos)**
+- **OMDb API**
+- **Scanner**
+- **Collections (List / ArrayList)**
+- **Manipulação de arquivos**
+- **Parser de dados JSON**
 
 ---
 
-## 💻 Tecnologias
-
-- Java 17+
-- Paradigma Orientado a Objetos
-- Collections Framework
-
----
-
-## ▶️ Execução
-
-### Pré-requisitos
-- JDK 17+
-- IDE Java (IntelliJ recomendado)
-
-### Clonar projeto
+## 📂 Estrutura principal do projeto
 
 ```bash
-git clone https://github.com/seu-usuario/screenmatch.git
-cd screenmatch
+src/
+└── br/
+    └── com/
+        └── alura/
+            └── screenmatch/
+                ├── integrations/
+                │   └── FindTitulos.java
+                ├── models/
+                │   └── Titulo.java
+                ├── principal/
+                │   └── PrincipalComBusca.java
+                └── utils/
+                    ├── FilesUtils.java
+                    └── ParserUtils.java
 ```
 
-### Executar
+## 🚀 Funcionalidades
+✅ Busca de filmes
+
+O usuário digita o nome de um filme e a aplicação faz a consulta na OMDb API.
+
+✅ Conversão dos dados
+
+O retorno da API é transformado em um objeto da classe Titulo.
+
+✅ Armazenamento em lista
+
+Todos os filmes buscados durante a execução ficam armazenados em uma lista.
+
+✅ Geração de arquivo
+
+Ao finalizar o programa, os títulos pesquisados são salvos automaticamente em arquivo.
+
+✅ Encerramento por comando
+
+O usuário pode digitar:
+```bash
+sair
 ```
-Principal.java → fluxo principal
-PrincipalComListas.java → listas e ordenação
+para encerrar a aplicação.
+
+## 🧠 Fluxo da aplicação
+1. O sistema solicita o nome de um filme;
+2. A aplicação monta a URL da API;
+3. Faz a requisição para a OMDb API;
+4. Recebe os dados do filme em formato String/JSON;
+5. Converte esses dados em um objeto Titulo;
+6. Adiciona o filme em uma lista;
+7. Quando o usuário digita sair, o sistema gera um arquivo com os títulos buscados.
+
+
+## 📄 Classe principal
+
+A aplicação é iniciada pela classe:
+**PrincipalComBusca.java**
+
+```java
+package br.com.alura.screenmatch.principal;
+
+import br.com.alura.screenmatch.integrations.FindTitulos;
+import br.com.alura.screenmatch.models.Titulo;
+import br.com.alura.screenmatch.utils.FilesUtils;
+import br.com.alura.screenmatch.utils.ParserUtils;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class PrincipalComBusca {
+
+  public static void main(String[] args) throws IOException {
+
+    Scanner leitura = new Scanner(System.in);
+    String filmeParaBuscar = "";
+
+    List<Titulo> titulos = new ArrayList<>();
+
+    while (!filmeParaBuscar.equalsIgnoreCase("sair")) {
+
+      System.out.printf("\nDigite o filme para busca:");
+      filmeParaBuscar = leitura.nextLine();
+
+      if (filmeParaBuscar.equalsIgnoreCase("sair")) {
+        break;
+      }
+
+      String endereco = "http://www.omdbapi.com/?apikey=94399dfc" + "&t=" + filmeParaBuscar;
+
+      FindTitulos findTitulos = new FindTitulos(endereco);
+      String tituloEmString = findTitulos.getTitulo();
+
+      Titulo titulo = ParserUtils.parseTituloOmbdToTitulo(tituloEmString);
+      titulos.add(titulo);
+    }
+
+    FilesUtils.buildFile(titulos);
+  }
+}
 ```
 
-## 💻 Exemplo de Uso
+## 🧩 Explicação dos principais componentes
+### PrincipalComBusca
+Responsável por controlar o fluxo principal da aplicação:
 
-Filme filme = new Filme("Tropa de Elite", 2005);
-filme.avalia(10);
-filme.avalia(8);
+- leitura do nome do filme;
+- chamada da API;
+- conversão dos dados;
+- armazenamento dos títulos;
+- geração do arquivo final.
 
-Serie serie = new Serie("Agente Noturno", 2023);
+### FindTitulos
+Classe responsável por fazer a integração com a OMDb API.
 
-CalculadoraDeTempo calc = new CalculadoraDeTempo();
-calc.inclui(filme);
-calc.inclui(serie);
+Responsabilidade:
 
-System.out.println(calc.getTempoTotal());
+- receber a URL da consulta;
+- realizar a requisição HTTP;
+- retornar os dados do filme.
 
-## 🧪 Casos Demonstrados
-* Polimorfismo com List<Titulo>
-* Ordenação customizada
-* Pattern Matching moderno
+### Titulo
 
-## 🔍 Decisões Técnicas
+Classe de modelo que representa um filme dentro da aplicação.
 
-### Classe Abstrata (Titulo)
-* Centraliza atributos comuns e garante consistência.
+Exemplo de possíveis atributos:
 
-### Separação de Responsabilidades
-* CalculadoraDeTempo → cálculo
-* FiltroRecomendacao → regra de recomendação,
+- nome
+- ano
+- duração
+- gênero
+- avaliação
+- descrição
 
-###  Ordenação Flexível
-* Comparable → ordenação natural
-* Comparator → ordenação customizada
+### ParserUtils
 
-## 🧑‍💻 Diferenciais
+Classe utilitária responsável por transformar o retorno da API em um objeto Java.
 
-* Modelagem de domínio clara
-* Código organizado e extensível
-* Uso moderno de Java
-* Base pronta para evolução enterprise
+Responsabilidade:
 
-## 🤝 Contribuição
+- converter JSON/String em Titulo.
 
-Sinta-se à vontade para contribuir com melhorias:
+### FilesUtils
 
-1. Fork do projeto
-2. Crie uma branch (`feature/minha-feature`)
-3. Commit suas alterações
-4. Push para a branch
-5. Abra um Pull Request
+Classe utilitária responsável por gerar o arquivo final com os títulos buscados.
 
----
+Responsabilidade:
 
-## 📄 Licença
+- receber a lista de filmes;
+- criar e escrever os dados em arquivo.
 
-Este projeto é livre para uso educacional e aprendizado.
 
----
+## ▶️ Como executar o projeto
+
+1. Clone o repositório
+```bash
+   git clone https://github.com/SEU-USUARIO/NOME-DO-REPOSITORIO.git
+```
+
+2. Abra o projeto na sua IDE
+
+Você pode utilizar:
+
+- IntelliJ IDEA
+- Eclipse
+- VS Code com extensão Java
+
+
+3. Execute a classe principal
+
+Execute a classe:
+```bash
+PrincipalComBusca.java
+```
+
+## 💻 Exemplo de uso no terminal
+
+```bash
+Digite o filme para busca: interestelar
+Digite o filme para busca: avatar
+Digite o filme para busca: coringa
+Digite o filme para busca: sair
+```
+
+Após isso, a aplicação irá gerar um arquivo com os filmes pesquisados.
+
+## 🌐 API utilizada
+
+Este projeto utiliza a:
+
+OMDb API
+
+API pública para consulta de informações sobre filmes, séries e episódios.
+
+🔗 Site oficial:
+https://www.omdbapi.com/
+
+
+## ⚠️ Observações importantes
+- O projeto utiliza uma chave de API para acessar os dados da OMDb;
+- É importante tratar possíveis erros como:
+  - filme não encontrado;
+  - falha de conexão;
+  - resposta inválida da API;
+  - problema ao gerar arquivo.
+
+## 🧪 Aprendizados praticados
+
+Este projeto ajuda a praticar:
+
+- Estruturação de projetos Java
+- Consumo de APIs externas
+- Conversão de dados
+- Utilização de listas
+- Manipulação de entrada e saída
+- Separação de responsabilidades entre classes
 
 ## 👨‍💻 Autor
 
-Desenvolvido para fins de estudo e prática em Java.
+Desenvolvido por **Wellington de Oliveira Carvalho**
+
+- GitHub: [Wellington](https://github.com/wellingtonolive)
+- LinkedIn: [Wellington de Oliveira](https://www.linkedin.com/in/wellington-oliveira-9bbb64174/)
+
+## 📜 Licença
+
+Este projeto está sob a licença MIT.
+Sinta-se livre para estudar, modificar e utilizar como base para aprendizado.
